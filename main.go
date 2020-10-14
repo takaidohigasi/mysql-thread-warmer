@@ -7,7 +7,6 @@ import (
 	"os"
 	"strconv"
 	"sync"
-	// "time"
 	_ "github.com/go-sql-driver/mysql"
 )
 
