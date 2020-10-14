@@ -11,12 +11,13 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-// function checkThreads returns the sum of Threads_cached and Threads_running
+// function checkThreads returns the sum of Threads_cached and Threads_connected
 func checkThreads(dbh *sql.DB) (int, error) {
 	threads := 0
 	rows, err := dbh.Query("show status like 'Threads%';")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
+		return threads, err
 	}
 	defer rows.Close()
 
@@ -26,7 +27,7 @@ func checkThreads(dbh *sql.DB) (int, error) {
 
 		if err = rows.Scan(&key, &val); err != nil {
 			fmt.Fprintln(os.Stderr, err)
-		} else if key == "Threads_cached" || key == "Threads_running" {
+		} else if key == "Threads_cached" || key == "Threads_connected" {
 			fmt.Fprintln(os.Stdout, string(key)+": "+string(val))
 			v, _ := strconv.Atoi(string(val))
 			threads += v
@@ -59,6 +60,16 @@ func main() {
 		os.Exit(1)
 	}
 	defer db.Close()
+
+	var thread_cache_size int
+	if err = dbh.QueryRow("select @@thread_cache_size;").Scan(&thread_cache_size); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	if thread_cache_size < cache_num {
+		fmt.Fprintln(os.Stdout, "input cache size is larger than thread_cache size")
+		cache_num = thread_cache_size
+	}
 
 	wg := &sync.WaitGroup{}
 	for j := 0; j < 5; j++ {
