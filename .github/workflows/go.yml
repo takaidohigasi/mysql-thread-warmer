@@ -18,3 +18,5 @@ jobs:
       uses: actions/checkout@v2
     - name: build
       run: make linux
+    - name: go fmt
+      run: test -z "$(gofmt -s -l . | tee /dev/stderr)"
