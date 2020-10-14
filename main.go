@@ -61,7 +61,7 @@ func main() {
 	defer db.Close()
 
 	var thread_cache_size int
-	if err = dbh.QueryRow("select @@thread_cache_size;").Scan(&thread_cache_size); err != nil {
+	if err = db.QueryRow("select @@thread_cache_size;").Scan(&thread_cache_size); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
