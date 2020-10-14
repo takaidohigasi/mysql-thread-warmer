@@ -4,10 +4,10 @@ import (
 	"database/sql"
 	"flag"
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
 	"os"
 	"strconv"
 	"sync"
-	_ "github.com/go-sql-driver/mysql"
 )
 
 // function checkThreads returns the sum of Threads_cached and Threads_connected
